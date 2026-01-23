@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="id" class="h-full">
+ <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Admin Approval</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+  <style>
+    body {
+      box-sizing: border-box;
+    }
+    * {
+      font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    
+    :root {
+      --bg-color: #e0e5ec;
+      --shadow-light: #ffffff;
+      --shadow-dark: #a3b1c6;
+      --primary: #6366f1;
+      --primary-dark: #4f46e5;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(0.98); }
+    }
+    
+    .fade-in {
+      animation: fadeIn 0.6s ease-out;
+    }
+    .pulse-animate {
+      animation: pulse 1.2s ease-in-out infinite;
+    }
+    
+    .neu-card {
+      background: var(--bg-color);
+      box-shadow: 
+        12px 12px 24px var(--shadow-dark),
+        -12px -12px 24px var(--shadow-light);
+      border-radius: 30px;
+    }
+    
+    .neu-input {
+      background: var(--bg-color);
+      box-shadow: 
+        inset 6px 6px 12px var(--shadow-dark),
+        inset -6px -6px 12px var(--shadow-light);
+      border: none;
+      transition: all 0.3s ease;
+    }
+    
+    .neu-input:focus {
+      outline: none;
+      box-shadow: 
+        inset 4px 4px 8px var(--shadow-dark),
+        inset -4px -4px 8px var(--shadow-light),
+        0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+    
+    .neu-btn {
+      background: linear-gradient(145deg, #7679f8, #6366f1);
+      box-shadow: 
+        8px 8px 16px var(--shadow-dark),
+        -8px -8px 16px var(--shadow-light);
+      border: none;
+      transition: all 0.3s ease;
+    }
+    
+    .neu-btn:hover:not(:disabled) {
+      box-shadow: 
+        6px 6px 12px var(--shadow-dark),
+        -6px -6px 12px var(--shadow-light);
+      transform: translateY(-2px);
+    }
+    
+    .neu-btn:active:not(:disabled) {
+      box-shadow: 
+        inset 4px 4px 8px rgba(163, 177, 198, 0.5),
+        inset -4px -4px 8px rgba(255, 255, 255, 0.5);
+      transform: translateY(0);
+    }
+    
+    .neu-btn:disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+    
+    .neu-icon {
+      background: var(--bg-color);
+      box-shadow: 
+        6px 6px 12px var(--shadow-dark),
+        -6px -6px 12px var(--shadow-light);
+      border-radius: 20px;
+    }
+    
+    .neu-info {
+      background: var(--bg-color);
+      box-shadow: 
+        inset 3px 3px 6px var(--shadow-dark),
+        inset -3px -3px 6px var(--shadow-light);
+      border-radius: 16px;
+    }
+    
+    .input-icon {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #94a3b8;
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full w-full overflow-auto" style="background: #e0e5ec;">
+  <main class="w-full min-h-full flex items-center justify-center p-4 md:p-6">
+   <div class="w-full max-w-md neu-card p-8 md:p-10 space-y-8 fade-in"><!-- Header -->
+    <div class="text-center space-y-4">
+     <div class="inline-flex items-center justify-center w-20 h-20 neu-icon">
+      <svg class="w-10 h-10 text-indigo-600" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>
+     </div>
+     <h1 id="pageTitle" class="text-3xl font-bold text-gray-800 tracking-tight">Admin Approval</h1>
+     <p id="descriptionText" class="text-sm text-gray-600 leading-relaxed px-2">Aktivasi user tanpa buka dashboard Supabase. Buka dari HP, paste User ID, masukkan PIN, lalu klik Approve.</p>
+    </div><!-- User ID Input -->
+    <div class="space-y-3"><label for="userId" class="block text-sm font-semibold text-gray-700 ml-1">User ID (UUID)</label>
+     <div class="relative">
+      <div class="input-icon">
+       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"></path>
+       </svg>
+      </div><input id="userId" class="w-full neu-input pl-12 pr-4 py-4 text-sm text-gray-700 rounded-2xl" placeholder="contoh: 550e8400-e29b-41d4-a716...">
+     </div>
+     <div class="flex items-start space-x-2 ml-1">
+      <svg class="w-4 h-4 text-indigo-500 mt-0.5 flex-shrink-0" fill="currentColor" viewbox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+      </svg>
+      <p class="text-xs text-gray-600">Tip: link dari WhatsApp bisa auto-isi User ID.</p>
+     </div>
+    </div><!-- PIN Input -->
+    <div class="space-y-3"><label for="pin" class="block text-sm font-semibold text-gray-700 ml-1">Admin PIN</label>
+     <div class="relative">
+      <div class="input-icon">
+       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+       </svg>
+      </div><input id="pin" type="password" class="w-full neu-input pl-12 pr-4 py-4 text-sm text-gray-700 rounded-2xl" placeholder="******">
+     </div>
+     <div class="flex items-start space-x-2 ml-1">
+      <svg class="w-4 h-4 text-indigo-500 mt-0.5 flex-shrink-0" fill="currentColor" viewbox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+      </svg>
+      <p class="text-xs text-gray-600">PIN disimpan di HP kamu (localStorage) biar next tinggal klik.</p>
+     </div>
+    </div><!-- Approve Button --> <button id="approveBtn" class="w-full neu-btn text-white py-4 font-semibold text-base rounded-2xl"> <span id="buttonText">Approve (Aktifkan)</span> </button> <!-- Message Display -->
+    <div id="msg" class="text-sm font-medium text-center min-h-[24px] transition-all duration-300 rounded-2xl"></div><!-- Info Footer -->
+    <div class="pt-4 space-y-3">
+     <div class="neu-info p-5">
+      <div class="flex items-start space-x-3">
+       <svg class="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" fill="currentColor" viewbox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+       </svg>
+       <div class="text-xs text-gray-700 space-y-2">
+        <div class="font-semibold text-amber-800">
+         Pastikan konfigurasi sudah benar:
+        </div>
+        <div class="leading-relaxed">
+         • Set <code class="bg-gray-200 px-1.5 py-0.5 rounded font-mono text-indigo-700">SUPABASE_URL</code> &amp; <code class="bg-gray-200 px-1.5 py-0.5 rounded font-mono text-indigo-700">ANON_KEY</code> di <code class="bg-gray-200 px-1.5 py-0.5 rounded font-mono text-indigo-700">public/js/supabaseClient.js</code>
+        </div>
+        <div class="leading-relaxed">
+         • Deploy Supabase Edge Function: <code class="bg-gray-200 px-1.5 py-0.5 rounded font-mono text-indigo-700">approve_user</code>
+        </div>
+       </div>
+      </div>
+     </div>
+    </div>
+   </div>
+  </main>
+  <script src="./js/supabaseClient.js"></script>
+  <script>
+    const defaultConfig = {
+      page_title: "Admin Approval",
+      description_text: "Aktivasi user tanpa buka dashboard Supabase. Buka dari HP, paste User ID, masukkan PIN, lalu klik Approve.",
+      approve_button_text: "Approve (Aktifkan)"
+    };
+
+    async function onConfigChange(config) {
+      const pageTitle = config.page_title || defaultConfig.page_title;
+      const descriptionText = config.description_text || defaultConfig.description_text;
+      const approveButtonText = config.approve_button_text || defaultConfig.approve_button_text;
+
+      document.getElementById('pageTitle').textContent = pageTitle;
+      document.getElementById('descriptionText').textContent = descriptionText;
+      document.getElementById('buttonText').textContent = approveButtonText;
+    }
+
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange,
+        mapToCapabilities: () => ({
+          recolorables: [],
+          borderables: [],
+          fontEditable: undefined,
+          fontSizeable: undefined
+        }),
+        mapToEditPanelValues: (config) => new Map([
+          ["page_title", config.page_title || defaultConfig.page_title],
+          ["description_text", config.description_text || defaultConfig.description_text],
+          ["approve_button_text", config.approve_button_text || defaultConfig.approve_button_text]
+        ])
+      });
+    }
+
+    (function () {
+      const $ = (id) => document.getElementById(id);
+      const userIdEl = $("userId");
+      const pinEl = $("pin");
+      const msgEl = $("msg");
+      const btn = $("approveBtn");
+      const buttonText = $("buttonText");
+
+      // Prefill from query (?u=...)
+      const params = new URLSearchParams(location.search);
+      const u = params.get("u");
+      if (u) userIdEl.value = u;
+
+      // Remember PIN (admin only, on your device)
+      const savedPin = localStorage.getItem("adminPin");
+      if (savedPin) pinEl.value = savedPin;
+
+      function setMsg(text, ok) {
+        msgEl.className = "text-sm font-medium text-center min-h-[24px] transition-all duration-300 rounded-2xl " + (ok ? "text-green-800 bg-green-100 p-3" : "text-red-800 bg-red-100 p-3");
+        msgEl.textContent = text;
+      }
+
+      async function approve() {
+        const user_id = (userIdEl.value || "").trim();
+        const pin = (pinEl.value || "").trim();
+        if (!user_id) return setMsg("User ID wajib diisi.", false);
+        if (!pin) return setMsg("PIN wajib diisi.", false);
+
+        // save pin for next time (on admin device)
+        localStorage.setItem("adminPin", pin);
+
+        // Function endpoint
+        const supabaseUrl = (window.SUPABASE_URL || "").trim();
+        if (!supabaseUrl || supabaseUrl.includes("YOUR-PROJECT-REF")) {
+          return setMsg("SUPABASE_URL belum diset di js/supabaseClient.js", false);
+        }
+        const endpoint = supabaseUrl.replace(/\/$/, "") + "/functions/v1/approve_user";
+
+        btn.disabled = true;
+        buttonText.textContent = "Approving...";
+        btn.classList.add("pulse-animate");
+        
+        try {
+          const res = await fetch(endpoint, {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ user_id, pin })
+          });
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) {
+            return setMsg(data.error || ("Gagal: HTTP " + res.status), false);
+          }
+          setMsg("✅ Berhasil di-approve. User sekarang ACTIVE.", true);
+        } catch (e) {
+          setMsg("Gagal konek ke function. Pastikan function sudah deploy.", false);
+        } finally {
+          btn.disabled = false;
+          const config = window.elementSdk?.config || defaultConfig;
+          buttonText.textContent = config.approve_button_text || defaultConfig.approve_button_text;
+          btn.classList.remove("pulse-animate");
+        }
+      }
+
+      btn.addEventListener("click", approve);
+    })();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c2a115cd7198838',t:'MTc2OTIwMDQyNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
