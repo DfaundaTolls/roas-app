@@ -1,4 +1,4 @@
-// public/js/pending.js
+// roas-app/public/js/pending.js
 (function () {
   const sb = window.sb || window.supabaseClient;
   if (!sb) {
@@ -41,7 +41,6 @@
 
     if (profile?.approved) {
       if (statusText) statusText.textContent = "ACTIVE";
-      // redirect
       location.href = "./app.html";
       return;
     }
@@ -49,7 +48,7 @@
     if (statusText) statusText.textContent = "PENDING";
   }
 
-  // Logout button in pending.html already calls handleLogout, but we provide fallback
+  // Logout fallback
   if (typeof window.handleLogout !== "function") {
     window.handleLogout = async function () {
       await sb.auth.signOut();
@@ -57,18 +56,35 @@
     };
   }
 
-  // WhatsApp contact button
+  // ===== WhatsApp contact button (dengan link approve) =====
+  const ADMIN_WA = "6285194268317"; // +62 851-9426-8317
+
+  function buildApproveLink(userId) {
+    // Link yang dibuka admin dari HP, auto-isi User ID
+    return `https://roas-app.pages.dev/admin.html?uid=${encodeURIComponent(userId)}`;
+  }
+
+  function buildWhatsAppMessage(email, userId) {
+    const approveLink = buildApproveLink(userId);
+
+    return (
+      `Halo admin, saya sudah daftar. Mohon bantu aktivasi akun saya.\n\n` +
+      `Email: ${email}\n` +
+      `User ID: ${userId}\n\n` +
+      `Klik link ini untuk approve dari HP:\n` +
+      `${approveLink}\n\n` +
+      `PIN admin: 313131`
+    );
+  }
+
   if (typeof window.contactAdmin !== "function") {
     window.contactAdmin = async function () {
       const user = await getMe();
       const email = user?.email || "-";
       const id = user?.id || "-";
-      // number is configured in pending.html fallback script if exists; else use placeholder
-      const num = "6280000000000";
-      const msg = encodeURIComponent(
-        `Halo admin, saya sudah daftar. Mohon bantu aktivasi akun saya.\n\nEmail: ${email}\nUser ID: ${id}`
-      );
-      window.open(`https://wa.me/${num}?text=${msg}`, "_blank");
+
+      const msg = encodeURIComponent(buildWhatsAppMessage(email, id));
+      window.open(`https://wa.me/${ADMIN_WA}?text=${msg}`, "_blank");
     };
   }
 
