@@ -49,24 +49,20 @@
   }
 
   // Logout fallback
-  if (typeof window.handleLogout !== "function") {
-    window.handleLogout = async function () {
-      await sb.auth.signOut();
-      location.href = "./login.html";
-    };
-  }
+  window.handleLogout = async function () {
+    await sb.auth.signOut();
+    location.href = "./login.html";
+  };
 
-  // ===== WhatsApp contact button (dengan link approve) =====
+  // ===== WhatsApp contact button (SELALU override) =====
   const ADMIN_WA = "6285194268317"; // +62 851-9426-8317
 
   function buildApproveLink(userId) {
-    // Link yang dibuka admin dari HP, auto-isi User ID
     return `https://roas-app.pages.dev/admin.html?uid=${encodeURIComponent(userId)}`;
   }
 
   function buildWhatsAppMessage(email, userId) {
     const approveLink = buildApproveLink(userId);
-
     return (
       `Halo admin, saya sudah daftar. Mohon bantu aktivasi akun saya.\n\n` +
       `Email: ${email}\n` +
@@ -77,16 +73,15 @@
     );
   }
 
-  if (typeof window.contactAdmin !== "function") {
-    window.contactAdmin = async function () {
-      const user = await getMe();
-      const email = user?.email || "-";
-      const id = user?.id || "-";
+  // OVERRIDE selalu, biar ga kepake versi lama dari pending.html
+  window.contactAdmin = async function () {
+    const user = await getMe();
+    const email = user?.email || "-";
+    const id = user?.id || "-";
 
-      const msg = encodeURIComponent(buildWhatsAppMessage(email, id));
-      window.open(`https://wa.me/${ADMIN_WA}?text=${msg}`, "_blank");
-    };
-  }
+    const msg = encodeURIComponent(buildWhatsAppMessage(email, id));
+    window.open(`https://wa.me/${ADMIN_WA}?text=${msg}`, "_blank");
+  };
 
   (async function boot() {
     setLoading(true);
