@@ -1,28 +1,37 @@
 // public/js/supabaseClient.js
-// 1) Buat project di Supabase, lalu isi 2 value ini.
-// 2) Pastikan site domain Cloudflare Pages kamu masuk ke Supabase Auth > URL Configuration (Site URL + Redirect URLs).
+// 1) Pastikan domain Cloudflare Pages kamu masuk ke Supabase:
+//    Authentication → URL Configuration → Site URL + Redirect URLs
 
-// TODO: ganti dengan milik kamu
-window.SUPABASE_URL = "https://YOUR-PROJECT-REF.supabase.co";
-window.SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
+window.SUPABASE_URL = "https://oqvrkoxrnkwtojiggelc.supabase.co";
+window.SUPABASE_ANON_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xdnJrb3hybmt3dG9qaWdnZWxjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkxODU1NzgsImV4cCI6MjA4NDc2MTU3OH0.QASVCj2le4iVGULonmsNL8KxxD8GupLJlVbhSM15yYI";
 
-// (Optional) Admin PIN untuk Edge Function approve_user.
-// Jangan taruh pin rahasia di frontend untuk production beneran.
-// Ini sesuai flow kamu: admin approve via halaman admin.html + PIN.
-window.ADMIN_PIN = "123456"; // ganti
+// Admin PIN harus sama persis dengan yang kamu set di Supabase secrets:
+// supabase secrets set ADMIN_PIN="...."
+window.ADMIN_PIN = "313131";
 
 (function initSupabase() {
-  if (!window.SUPABASE_URL || !window.SUPABASE_ANON_KEY) return;
+  if (!window.SUPABASE_URL || !window.SUPABASE_ANON_KEY) {
+    console.error("SUPABASE_URL / SUPABASE_ANON_KEY belum diisi.");
+    return;
+  }
 
-  // Support: jika pending.html sudah load supabase-js@2 via CDN
+  // Pastikan supabase-js v2 sudah keload via CDN di HTML
   if (window.supabase && typeof window.supabase.createClient === "function") {
     window.sb = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY, {
-      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true },
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+      },
     });
-    // back-compat for scripts that look for window.supabaseClient
+
+    // alias biar script lain tetap jalan
     window.supabaseClient = window.sb;
     return;
   }
 
-  console.warn("Supabase JS belum ke-load. Tambahkan: https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2");
+  console.error(
+    'Supabase JS belum ke-load. Tambahkan ini di HTML:\n<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>'
+  );
 })();
