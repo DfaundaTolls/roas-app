@@ -521,8 +521,15 @@
  */
 (function () {
   const ADMIN_WHATSAPP_E164 = "6285194268317"; // +62 851-9426-8317 (remove + and spaces)
+
+  // ✅ UPDATED: WhatsApp message now includes approve link + PIN
   const DEFAULT_WHATSAPP_MSG =
-    "Halo admin, saya sudah daftar. Mohon bantu aktivasi akun saya.\n\nEmail: {email}\nUser ID: {id}";
+    "Halo admin, saya sudah daftar. Mohon bantu aktivasi akun saya.\n\n" +
+    "Email: {email}\n" +
+    "User ID: {id}\n\n" +
+    "Klik link ini untuk approve dari HP:\n" +
+    "https://roas-app.pages.dev/admin.html?uid={id}\n\n" +
+    "PIN admin: 313131";
 
   // Fallback: copy to clipboard
   if (typeof window.copyToClipboard !== "function") {
@@ -574,9 +581,10 @@
     if (emailEl) emailEl.innerText = data.user.email || "-";
     if (idEl) idEl.innerText = data.user.id || "-";
 
+    // build msg from defaults
     const msg = DEFAULT_WHATSAPP_MSG
-      .replace("{email}", data.user.email || "-")
-      .replace("{id}", data.user.id || "-");
+      .replaceAll("{email}", data.user.email || "-")
+      .replaceAll("{id}", data.user.id || "-");
     window.__pendingWhatsAppMsg = msg;
   }
 
@@ -584,9 +592,10 @@
   window.contactAdmin = function () {
     const email = (document.getElementById("userEmail")?.innerText || "").trim() || "-";
     const id = (document.getElementById("userId")?.innerText || "").trim() || "-";
+
     const msg = (window.__pendingWhatsAppMsg || DEFAULT_WHATSAPP_MSG)
-      .replace("{email}", email)
-      .replace("{id}", id);
+      .replaceAll("{email}", email)
+      .replaceAll("{id}", id);
 
     const url = "https://wa.me/" + ADMIN_WHATSAPP_E164 + "?text=" + encodeURIComponent(msg);
     window.open(url, "_blank", "noopener,noreferrer");
