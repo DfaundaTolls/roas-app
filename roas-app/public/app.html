@@ -1766,10 +1766,19 @@
     // USER STATE MANAGEMENT
     // ========================================
     
-    let currentUser = {
+    // ========================================
+    // USER STATE MANAGEMENT (Supabase-aware)
+    // ========================================
+    // public/js/app.js akan mengisi window.currentUser dari session Supabase.
+    // Dulu file ini pakai local `currentUser` (email placeholder),
+    // jadi tampilan Pengaturan/Profil tidak ikut berubah.
+    window.currentUser = window.currentUser || {
       name: 'Pengguna',
-      email: 'user@example.com'
+      email: '—'
     };
+
+    // Keep a local reference to the SAME object for backward compatibility.
+    let currentUser = window.currentUser;
 
     // Update User Section in Settings
     function updateUserSection() {
@@ -1885,10 +1894,10 @@
         confirmDiv.remove();
         backdrop.remove();
         
-        // Reset to default user
-        currentUser = {
+        // Reset to default user (keep window.currentUser in sync)
+        currentUser = window.currentUser = {
           name: 'Pengguna',
-          email: 'user@example.com'
+          email: '—'
         };
         
         // Reset form
